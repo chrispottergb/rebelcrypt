@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/rebelcrypt/static/css/main.71d26f3d.css",
+    "main.js": "/rebelcrypt/static/js/main.4fc1ff9e.js",
+    "index.html": "/rebelcrypt/index.html",
+    "main.71d26f3d.css.map": "/rebelcrypt/static/css/main.71d26f3d.css.map",
+    "main.4fc1ff9e.js.map": "/rebelcrypt/static/js/main.4fc1ff9e.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.71d26f3d.css",
+    "static/js/main.4fc1ff9e.js"
+  ]
+}
