@@ -1,0 +1,22 @@
+import { RouteDefinition } from '../server';
+export const musicRoutes: RouteDefinition[] = [
+  { method: 'GET', path: '/api/v1/tracks', handler: 'tracks.list', auth: true, permissions: ['tracks:read'] },
+  { method: 'POST', path: '/api/v1/tracks', handler: 'tracks.create', auth: true, permissions: ['tracks:create'] },
+  { method: 'GET', path: '/api/v1/tracks/:id', handler: 'tracks.get', auth: true, permissions: ['tracks:read'] },
+  { method: 'PUT', path: '/api/v1/tracks/:id', handler: 'tracks.update', auth: true, permissions: ['tracks:update'] },
+  { method: 'DELETE', path: '/api/v1/tracks/:id', handler: 'tracks.delete', auth: true, permissions: ['tracks:delete'] },
+  { method: 'GET', path: '/api/v1/tracks/:id/analytics', handler: 'tracks.analytics', auth: true, permissions: ['analytics:read'] },
+  { method: 'POST', path: '/api/v1/tracks/search', handler: 'tracks.search', auth: true, permissions: ['tracks:read'] },
+  { method: 'GET', path: '/api/v1/artists', handler: 'artists.list', auth: true, permissions: ['tracks:read'] },
+  { method: 'POST', path: '/api/v1/artists', handler: 'artists.create', auth: true, permissions: ['tracks:create'] },
+  { method: 'GET', path: '/api/v1/artists/:id', handler: 'artists.get', auth: true, permissions: ['tracks:read'] },
+  { method: 'GET', path: '/api/v1/albums', handler: 'albums.list', auth: true, permissions: ['tracks:read'] },
+  { method: 'POST', path: '/api/v1/albums', handler: 'albums.create', auth: true, permissions: ['tracks:create'] },
+  { method: 'GET', path: '/api/v1/genres', handler: 'genres.list', auth: true },
+  { method: 'GET', path: '/api/v1/genres/:id', handler: 'genres.get', auth: true },
+  { method: 'GET', path: '/api/v1/genres/:id/subgenres', handler: 'genres.subgenres', auth: true },
+  { method: 'GET', path: '/api/v1/languages', handler: 'languages.list', auth: true },
+  { method: 'POST', path: '/api/v1/catalog/ingest', handler: 'catalog.ingest', auth: true, permissions: ['catalog:create'] },
+  { method: 'GET', path: '/api/v1/catalog/jobs', handler: 'catalog.listJobs', auth: true, permissions: ['catalog:read'] },
+  { method: 'GET', path: '/api/v1/catalog/jobs/:id', handler: 'catalog.getJob', auth: true, permissions: ['catalog:read'] },
+];

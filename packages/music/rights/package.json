@@ -1,0 +1,9 @@
+{
+  "name": "@music-ai/rights",
+  "version": "0.1.0",
+  "description": "Rights & royalties engine — contracts, territory management, royalty splitting",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": { "build": "tsc", "test": "jest" },
+  "devDependencies": { "typescript": "^5.4.0" }
+}

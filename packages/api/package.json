@@ -1,0 +1,9 @@
+{
+  "name": "@music-ai/api",
+  "version": "0.1.0",
+  "description": "API Gateway — REST API with auth, RBAC, and multi-tenant routing",
+  "main": "dist/index.js",
+  "scripts": { "build": "tsc", "dev": "ts-node src/index.ts", "start": "node dist/index.js" },
+  "dependencies": { "uuid": "^9.0.0" },
+  "devDependencies": { "typescript": "^5.4.0", "@types/node": "^20.0.0" }
+}
