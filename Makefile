@@ -7,19 +7,19 @@ help: ## Show this help message
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  %-20s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 install: ## Install dependencies
-	npm install
+	yarn install
 
 build: ## Build all packages
-	npm run build
+	yarn build
 
 test: ## Run tests
-	npm test
+	yarn test
 
 lint: ## Run linter
-	npm run lint
+	yarn lint
 
 typecheck: ## Run TypeScript type checking
-	npm run typecheck
+	yarn typecheck
 
 clean: ## Clean build artifacts
 	find packages -name "dist" -type d -exec rm -rf {} +
@@ -27,7 +27,7 @@ clean: ## Clean build artifacts
 	rm -rf node_modules
 
 dev: ## Start development servers
-	npm run dev
+	yarn dev
 
 docker-build: ## Build Docker images
 	docker-compose build
@@ -55,18 +55,18 @@ k8s-status: ## Check Kubernetes deployment status
 	kubectl get all -n music-ai-platform
 
 migrate: ## Run database migrations
-	npm run migrate
+	yarn migrate
 
 seed: ## Seed database with sample data
-	npm run seed
+	yarn seed
 
 format: ## Format code
-	npm run format
+	yarn format
 
 security-audit: ## Run security audit
-	npm audit
+	yarn audit
 
 update-deps: ## Update dependencies
-	npm update
+	yarn upgrade
 
 ci: lint typecheck test build ## Run CI pipeline locally

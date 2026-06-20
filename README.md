@@ -123,12 +123,18 @@ rebelcrypt/
 
 ```bash
 # Install dependencies
+yarn install
+# or
 make install
 
 # Build all packages
+yarn build
+# or
 make build
 
 # Run tests
+yarn test
+# or
 make test
 ```
 
@@ -149,13 +155,13 @@ make docker-down
 
 ```bash
 # Install dependencies
-npm install
+yarn install
 
 # Build packages
-npm run build
+yarn build
 
 # Start dev servers
-npm run dev
+yarn dev
 ```
 
 ## API Routes (94 endpoints)
