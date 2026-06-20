@@ -7,4 +7,9 @@
     "build": "tsc",
     "test": "jest"
   }
+,
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/node": "^20.0.0"
+  }
 }
