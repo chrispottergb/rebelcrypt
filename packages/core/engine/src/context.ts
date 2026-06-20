@@ -31,10 +31,12 @@ class DefaultLogger implements Logger {
   }
 
   debug(message: string, meta?: Record<string, unknown>): void {
+    // eslint-disable-next-line no-console
     console.debug(JSON.stringify({ level: 'debug', message, ...this.formatMeta(meta) }));
   }
 
   info(message: string, meta?: Record<string, unknown>): void {
+    // eslint-disable-next-line no-console
     console.info(JSON.stringify({ level: 'info', message, ...this.formatMeta(meta) }));
   }
 
@@ -88,24 +90,23 @@ export class WorkflowContext implements ExecutionContext {
     this.logger = params.logger ?? new DefaultLogger(this.executionId, this.tenantId);
 
     // Build the variables proxy that delegates to localVariables + parent chain
-    const self = this;
     this.variables = new Proxy({} as Record<string, unknown>, {
-      get(_target, prop: string) {
-        return self.getVariable(prop);
+      get: (_target, prop: string) => {
+        return this.getVariable(prop);
       },
-      set(_target, prop: string, value: unknown) {
-        self.setVariable(prop, value);
+      set: (_target, prop: string, value: unknown) => {
+        this.setVariable(prop, value);
         return true;
       },
-      has(_target, prop: string) {
-        return self.hasVariable(prop);
+      has: (_target, prop: string) => {
+        return this.hasVariable(prop);
       },
-      ownKeys() {
-        return Array.from(self.getAllVariableKeys());
+      ownKeys: () => {
+        return Array.from(this.getAllVariableKeys());
       },
-      getOwnPropertyDescriptor(_target, prop: string) {
-        if (self.hasVariable(prop)) {
-          return { configurable: true, enumerable: true, value: self.getVariable(prop) };
+      getOwnPropertyDescriptor: (_target, prop: string) => {
+        if (this.hasVariable(prop)) {
+          return { configurable: true, enumerable: true, value: this.getVariable(prop) };
         }
         return undefined;
       },
