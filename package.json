@@ -2,6 +2,7 @@
   "name": "music-ai-ecosystem",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "yarn@1.22.22",
   "description": "Global Music AI Ecosystem — 60-layer enterprise AI platform for the global music industry",
   "workspaces": [
     "packages/core/*",
