@@ -4,6 +4,6 @@
   "description": "Global language registry — 200+ languages with music traditions",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "scripts": { "build": "tsc", "test": "jest" },
+  "scripts": { "build": "tsc", "test": "echo 'No tests yet'" },
   "devDependencies": { "typescript": "^5.4.0" }
 }
