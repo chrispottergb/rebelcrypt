@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: 'Music AI Dashboards'
+    orgId: 1
+    folder: 'Music AI'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    options:
+      path: /var/lib/grafana/dashboards
