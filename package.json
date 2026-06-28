@@ -14,7 +14,8 @@
   ],
   "scripts": {
     "build": "turbo run build",
-    "test": "turbo run test",
+    "test": "TS_NODE_PROJECT=tsconfig.test.json node --require ts-node/register --test \"packages/**/src/**/*.test.ts\"",
+    "test:turbo": "turbo run test",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "clean": "turbo run clean && rm -rf node_modules",
