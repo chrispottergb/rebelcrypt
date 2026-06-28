@@ -4,6 +4,10 @@ RUN apk add --no-cache libc6-compat python3 make g++
 
 FROM base AS deps
 COPY package.json package-lock.json* turbo.json ./
+COPY packages/core/types/package.json ./packages/core/types/package.json
+COPY packages/core/logger/package.json ./packages/core/logger/package.json
+COPY packages/core/config/package.json ./packages/core/config/package.json
+COPY packages/core/queue/package.json ./packages/core/queue/package.json
 COPY packages/core/engine/package.json ./packages/core/engine/package.json
 COPY packages/core/storage/package.json ./packages/core/storage/package.json
 COPY packages/core/security/package.json ./packages/core/security/package.json
@@ -42,12 +46,11 @@ RUN npx turbo run build
 FROM base AS api
 WORKDIR /app
 ENV NODE_ENV=production
-COPY --from=builder /app/packages/api/dist ./packages/api/dist
-COPY --from=builder /app/packages/api/package.json ./packages/api/package.json
-COPY --from=builder /app/packages/core/engine/dist ./packages/core/engine/dist
-COPY --from=builder /app/packages/core/storage/dist ./packages/core/storage/dist
-COPY --from=builder /app/packages/core/security/dist ./packages/core/security/dist
+# Copy the full built workspace so every @music-ai/* symlink in node_modules
+# resolves to its package dist (the API imports security, observability,
+# governance, genre-registry, language-registry and rights at runtime).
+COPY --from=builder /app/packages ./packages
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 EXPOSE 3000
-CMD ["node", "packages/api/dist/index.js"]
+CMD ["node", "packages/api/dist/main.js"]
