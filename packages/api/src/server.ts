@@ -46,7 +46,9 @@ export function createApp(config?: Partial<AppConfig>) {
     routes: allRoutes,
     routeCount: allRoutes.length,
     start: () => {
+      // eslint-disable-next-line no-console
       console.log(`Music AI API Gateway starting on ${appConfig.host}:${appConfig.port}`);
+      // eslint-disable-next-line no-console
       console.log(`Registered ${allRoutes.length} routes`);
       return appConfig;
     },
