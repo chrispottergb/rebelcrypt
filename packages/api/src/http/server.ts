@@ -1,6 +1,7 @@
 import { createServer, type IncomingMessage, type ServerResponse, type Server } from 'http';
 import { JwtService } from '@music-ai/security';
 import { MetricsRegistry } from '@music-ai/observability';
+import { AuditLog } from '@music-ai/governance';
 import { Router } from './router';
 import { DataStore, type HandlerFn, type RequestContext, type AuthInfo } from './context';
 import { handlerRegistry } from './handlers';
@@ -16,9 +17,12 @@ export interface HttpServer {
   server: Server;
   store: DataStore;
   metrics: MetricsRegistry;
+  audit: AuditLog;
   listen(port: number, host: string): Promise<void>;
   close(): Promise<void>;
 }
+
+const MUTATING = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
 function parseQuery(url: string): Record<string, string> {
   const q: Record<string, string> = {};
@@ -71,12 +75,13 @@ export function createHttpServer(opts: HttpServerOptions): HttpServer {
   const store = new DataStore();
   const jwt = new JwtService({ secret: opts.jwtSecret });
   const metrics = new MetricsRegistry();
+  const audit = new AuditLog();
   const requests = metrics.counter({
     name: 'http_requests_total',
     help: 'Total HTTP requests',
     labelNames: ['method', 'status'],
   });
-  const registry: Record<string, HandlerFn> = handlerRegistry(jwt, metrics);
+  const registry: Record<string, HandlerFn> = handlerRegistry(jwt, metrics, audit);
 
   const server = createServer((req: IncomingMessage, res: ServerResponse) => {
     void handle(req, res);
@@ -151,6 +156,14 @@ export function createHttpServer(opts: HttpServerOptions): HttpServer {
         auth,
       };
       const result = await handler(ctx, store);
+      if (MUTATING.has(method)) {
+        audit.record({
+          action: matched.route.handler,
+          actorId: auth?.userId ?? 'anonymous',
+          success: result.status < 400,
+          metadata: { path, status: result.status },
+        });
+      }
       send(result.status, result.body, result.headers);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Internal server error';
@@ -162,6 +175,7 @@ export function createHttpServer(opts: HttpServerOptions): HttpServer {
     server,
     store,
     metrics,
+    audit,
     listen: (port: number, host: string) =>
       new Promise<void>((resolve) => server.listen(port, host, resolve)),
     close: () =>

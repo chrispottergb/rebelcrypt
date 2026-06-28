@@ -32,7 +32,7 @@ function maskKey(row: Record<string, unknown>): Record<string, unknown> {
   return { ...row, key: key ? `${key.slice(0, 6)}…${key.slice(-4)}` : '' };
 }
 
-export function makeAdminHandlers(_deps: HandlerDeps): Record<string, HandlerFn> {
+export function makeAdminHandlers(deps: HandlerDeps): Record<string, HandlerFn> {
   return {
     // ---- health ----
     'system.health': () => ok({ status: 'ok', uptime: process.uptime(), timestamp: new Date().toISOString() }),
@@ -80,15 +80,10 @@ export function makeAdminHandlers(_deps: HandlerDeps): Record<string, HandlerFn>
     'admin.listRoles': () => ok(ROLES),
 
     // ---- audit & incidents ----
-    'admin.auditLogs': () =>
-      ok(
-        ['user.login', 'workflow.execute', 'track.create', 'rights.check', 'tenant.update'].map((action, i) => ({
-          id: `audit-${i}`,
-          action,
-          actor: `user-${i}`,
-          at: new Date(Date.UTC(2026, 0, i + 1)).toISOString(),
-        })),
-      ),
+    'admin.auditLogs': (ctx) => {
+      const limit = ctx.query['limit'] ? Number(ctx.query['limit']) : 100;
+      return ok(deps.audit.query({ limit }));
+    },
     'admin.incidents': () => ok([]),
 
     // ---- api keys ----
