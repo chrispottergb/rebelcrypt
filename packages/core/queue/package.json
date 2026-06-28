@@ -1,0 +1,17 @@
+{
+  "name": "@music-ai/queue",
+  "version": "0.1.0",
+  "description": "In-memory job queue with priority, delay, dedupe, retry/backoff, dead-letter, and concurrent workers",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo 'No tests yet'",
+    "lint": "eslint src/"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/node": "^20.0.0"
+  }
+}
