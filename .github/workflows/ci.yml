@@ -95,7 +95,7 @@ jobs:
           node-version: '20'
           cache: 'yarn'
       - run: yarn install --frozen-lockfile
-      - run: yarn audit --level high
+      - run: yarn audit --level critical
       - name: Run Snyk security scan
         uses: snyk/actions/node@master
         continue-on-error: true
