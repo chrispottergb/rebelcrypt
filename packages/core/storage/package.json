@@ -1,0 +1,24 @@
+{
+  "name": "@rebelcrypt/storage",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Database schema and storage layer for the Global Music AI Ecosystem",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "migrate": "ts-node src/migrate.ts",
+    "migrate:dry": "ts-node src/migrate.ts --dry-run"
+  },
+  "dependencies": {
+    "pg": "^8.13.1",
+    "pgvector": "^0.2.0",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.10",
+    "@types/uuid": "^10.0.0",
+    "typescript": "^5.6.0",
+    "ts-node": "^10.9.2"
+  }
+}

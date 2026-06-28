@@ -1,0 +1,1 @@
+{ "name": "@music-ai/llm-client", "version": "0.1.0", "description": "LLM abstraction layer — multi-provider AI text generation", "main": "dist/index.js", "types": "dist/index.d.ts", "scripts": { "build": "tsc" }, "devDependencies": { "typescript": "^5.4.0" } }

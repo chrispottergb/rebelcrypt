@@ -1,0 +1,10 @@
+export { DatabaseManager, TransactionClient, TenantScopedDb } from './db';
+export type { DbConfig, QueryResult } from './db';
+export { VectorDbAdapter } from './vector-db';
+export type { VectorEntry, SimilarityResult, VectorDbConfig } from './vector-db';
+export { TenantRepository } from './repositories/tenant.repository';
+export { TrackRepository } from './repositories/track.repository';
+export { ArtistRepository } from './repositories/artist.repository';
+export { WorkflowRepository } from './repositories/workflow.repository';
+export { ExperimentRepository } from './repositories/experiment.repository';
+export { AuditRepository } from './repositories/audit.repository';

@@ -1,0 +1,81 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: music-ai-ingress
+  namespace: music-ai-platform
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - api.music-ai-platform.com
+    - studio.music-ai-platform.com
+    - console.music-ai-platform.com
+    - ops.music-ai-platform.com
+    - exec.music-ai-platform.com
+    - edu.music-ai-platform.com
+    secretName: music-ai-tls
+  rules:
+  - host: api.music-ai-platform.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: api
+            port:
+              number: 80
+  - host: studio.music-ai-platform.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: workflow-studio
+            port:
+              number: 80
+  - host: console.music-ai-platform.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: industry-console
+            port:
+              number: 80
+  - host: ops.music-ai-platform.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: ops-dashboard
+            port:
+              number: 80
+  - host: exec.music-ai-platform.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: exec-portal
+            port:
+              number: 80
+  - host: edu.music-ai-platform.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: education-console
+            port:
+              number: 80
