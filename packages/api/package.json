@@ -3,7 +3,15 @@
   "version": "0.1.0",
   "description": "API Gateway — REST API with auth, RBAC, and multi-tenant routing",
   "main": "dist/index.js",
-  "scripts": { "build": "tsc", "dev": "ts-node src/index.ts", "start": "node dist/index.js" },
-  "dependencies": { "uuid": "^9.0.0" },
+  "scripts": { "build": "tsc", "dev": "ts-node src/main.ts", "start": "node dist/main.js" },
+  "dependencies": {
+    "uuid": "^9.0.0",
+    "@music-ai/security": "0.1.0",
+    "@music-ai/observability": "0.1.0",
+    "@music-ai/governance": "0.1.0",
+    "@music-ai/genre-registry": "0.1.0",
+    "@music-ai/language-registry": "0.1.0",
+    "@music-ai/rights": "0.1.0"
+  },
   "devDependencies": { "typescript": "^5.4.0", "@types/node": "^20.0.0" }
 }

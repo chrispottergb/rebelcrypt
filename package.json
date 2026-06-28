@@ -10,7 +10,8 @@
     "packages/ai/*",
     "packages/analytics/*",
     "packages/enterprise/*",
-    "packages/ui/*"
+    "packages/ui/*",
+    "packages/api"
   ],
   "scripts": {
     "build": "turbo run build",
