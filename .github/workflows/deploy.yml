@@ -53,18 +53,32 @@ jobs:
     if: github.ref == 'refs/heads/main'
     environment: staging
     steps:
+      - name: Check for cluster credentials
+        id: guard
+        env:
+          KUBE_CONFIG_STAGING: ${{ secrets.KUBE_CONFIG_STAGING }}
+        run: |
+          if [ -z "$KUBE_CONFIG_STAGING" ]; then
+            echo "::notice::KUBE_CONFIG_STAGING secret is not set — skipping staging deploy. Add a base64-encoded kubeconfig as a repo secret to enable Kubernetes deploys."
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/checkout@v4
+        if: steps.guard.outputs.enabled == 'true'
 
       - name: Install kubectl
+        if: steps.guard.outputs.enabled == 'true'
         uses: azure/setup-kubectl@v3
 
-      - name: Configure kubectl
+      - name: Configure kubectl and deploy
+        if: steps.guard.outputs.enabled == 'true'
+        env:
+          KUBE_CONFIG_STAGING: ${{ secrets.KUBE_CONFIG_STAGING }}
         run: |
-          echo "${{ secrets.KUBE_CONFIG_STAGING }}" | base64 -d > kubeconfig
-          export KUBECONFIG=kubeconfig
-
-      - name: Deploy to staging
-        run: |
+          echo "$KUBE_CONFIG_STAGING" | base64 -d > kubeconfig
+          export KUBECONFIG="$PWD/kubeconfig"
           kubectl set image deployment/api api=ghcr.io/${{ github.repository }}/api:sha-${GITHUB_SHA::7} -n music-ai-platform-staging
           kubectl rollout status deployment/api -n music-ai-platform-staging --timeout=5m
 
@@ -74,17 +88,31 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v')
     environment: production
     steps:
+      - name: Check for cluster credentials
+        id: guard
+        env:
+          KUBE_CONFIG_PROD: ${{ secrets.KUBE_CONFIG_PROD }}
+        run: |
+          if [ -z "$KUBE_CONFIG_PROD" ]; then
+            echo "::notice::KUBE_CONFIG_PROD secret is not set — skipping production deploy. Add a base64-encoded kubeconfig as a repo secret to enable Kubernetes deploys."
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/checkout@v4
+        if: steps.guard.outputs.enabled == 'true'
 
       - name: Install kubectl
+        if: steps.guard.outputs.enabled == 'true'
         uses: azure/setup-kubectl@v3
 
-      - name: Configure kubectl
+      - name: Configure kubectl and deploy
+        if: steps.guard.outputs.enabled == 'true'
+        env:
+          KUBE_CONFIG_PROD: ${{ secrets.KUBE_CONFIG_PROD }}
         run: |
-          echo "${{ secrets.KUBE_CONFIG_PROD }}" | base64 -d > kubeconfig
-          export KUBECONFIG=kubeconfig
-
-      - name: Deploy to production
-        run: |
+          echo "$KUBE_CONFIG_PROD" | base64 -d > kubeconfig
+          export KUBECONFIG="$PWD/kubeconfig"
           kubectl set image deployment/api api=ghcr.io/${{ github.repository }}/api:${GITHUB_REF#refs/tags/} -n music-ai-platform
           kubectl rollout status deployment/api -n music-ai-platform --timeout=10m
