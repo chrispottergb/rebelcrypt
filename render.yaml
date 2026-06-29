@@ -1,0 +1,90 @@
+# Render Blueprint — one-click deploy of the Global Music AI platform.
+# In Render: New + -> Blueprint -> connect this repo. Render reads this file
+# and provisions every service below. The API is self-contained (in-memory
+# store) so no database is required to run; add a Postgres block later when
+# real persistence is wired.
+#
+# Docs: https://render.com/docs/blueprint-spec
+services:
+  # ---- API gateway (the core service) ----
+  - type: web
+    name: rebelcrypt-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /api/v1/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ENCRYPTION_KEY
+        generateValue: true
+
+  # ---- Frontends (Next.js apps; each builds only itself via turbo) ----
+  - type: web
+    name: rebelcrypt-workflow-studio
+    runtime: docker
+    dockerfilePath: ./packages/ui/workflow-studio/Dockerfile
+    dockerContext: .
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_API_URL
+        value: https://rebelcrypt-api.onrender.com
+
+  - type: web
+    name: rebelcrypt-industry-console
+    runtime: docker
+    dockerfilePath: ./packages/ui/industry-console/Dockerfile
+    dockerContext: .
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_API_URL
+        value: https://rebelcrypt-api.onrender.com
+
+  - type: web
+    name: rebelcrypt-ops-dashboard
+    runtime: docker
+    dockerfilePath: ./packages/ui/ops-dashboard/Dockerfile
+    dockerContext: .
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_API_URL
+        value: https://rebelcrypt-api.onrender.com
+
+  - type: web
+    name: rebelcrypt-exec-portal
+    runtime: docker
+    dockerfilePath: ./packages/ui/exec-portal/Dockerfile
+    dockerContext: .
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_API_URL
+        value: https://rebelcrypt-api.onrender.com
+
+  - type: web
+    name: rebelcrypt-education-console
+    runtime: docker
+    dockerfilePath: ./packages/ui/education-console/Dockerfile
+    dockerContext: .
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_API_URL
+        value: https://rebelcrypt-api.onrender.com

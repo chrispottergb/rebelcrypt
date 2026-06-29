@@ -2,6 +2,15 @@
 
 A 60-layer, enterprise-grade AI platform for the global music industry. Built with TypeScript, this monorepo contains 600+ modules, 2,800+ workflows, 7,000+ nodes, 14 backend services, and 5 frontend applications with full CI/CD and Kubernetes deployment.
 
+## 🚀 Deploy it online (one click)
+
+The fastest way to get a public URL (works on your phone) is **Render**, via the
+included [`render.yaml`](./render.yaml) Blueprint — no Kubernetes required.
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/chrispottergb/rebelcrypt)
+
+See [`DEPLOY.md`](./DEPLOY.md) for step-by-step instructions and a Railway alternative.
+
 ## Architecture Overview
 
 ### Core Platform (Layer 1-15)
