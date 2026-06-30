@@ -48,9 +48,11 @@ curl -X POST https://rebelcrypt-api.onrender.com/api/v1/auth/login \
 - Free Render web services **spin down after ~15 minutes of inactivity** and
   take ~30–60s to wake on the next request. That's normal for free; upgrade a
   service to a paid instance to keep it always-on.
-- The API runs an **in-memory store**, so data resets when the service
-  restarts. Wire a managed Postgres (add a `databases:` block to `render.yaml`
-  and read `DATABASE_URL`) when you need persistence.
+- Persistence: the Blueprint provisions a free managed Postgres
+  (`rebelcrypt-db`) and wires `DATABASE_URL` into the API, so data **survives
+  restarts**. If `DATABASE_URL` is absent or unreachable the API automatically
+  falls back to an in-memory store (ephemeral) and still boots. Render's free
+  Postgres expires after ~90 days — upgrade the database to keep it.
 
 ## Alternative: Railway
 

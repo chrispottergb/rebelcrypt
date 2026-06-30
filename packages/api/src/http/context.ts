@@ -42,12 +42,33 @@ export function badRequest(message: string): HandlerResult {
 }
 
 /**
- * A simple per-collection in-memory store. This is the seam where a real
- * Postgres-backed repository would slot in; the handler layer only depends
- * on these methods, not on the storage mechanism.
+ * Optional persistence sink. The in-memory Collection is a synchronous
+ * read/write cache; when a sink is attached, every mutation is also written
+ * through to durable storage (fire-and-forget so handlers stay synchronous),
+ * and the cache is hydrated from storage on startup.
+ */
+export interface PersistenceSink {
+  upsert(collection: string, row: { id: string }): void;
+  remove(collection: string, id: string): void;
+}
+
+/**
+ * A per-collection in-memory store with optional write-through persistence.
+ * The handler layer depends only on these methods, not on the storage
+ * mechanism, so swapping the durable backend never touches handlers.
  */
 export class Collection<T extends { id: string }> {
   private readonly rows = new Map<string, T>();
+
+  constructor(
+    private readonly name: string,
+    private readonly sink?: PersistenceSink,
+  ) {}
+
+  /** Populate the cache from durable storage without re-persisting. */
+  hydrate(rows: T[]): void {
+    for (const row of rows) this.rows.set(row.id, row);
+  }
 
   list(): T[] {
     return Array.from(this.rows.values());
@@ -61,6 +82,7 @@ export class Collection<T extends { id: string }> {
     const id = row.id ?? randomUUID();
     const full = { ...row, id } as T;
     this.rows.set(id, full);
+    this.sink?.upsert(this.name, full);
     return full;
   }
 
@@ -69,11 +91,14 @@ export class Collection<T extends { id: string }> {
     if (!existing) return undefined;
     const updated = { ...existing, ...patch, id } as T;
     this.rows.set(id, updated);
+    this.sink?.upsert(this.name, updated);
     return updated;
   }
 
   remove(id: string): boolean {
-    return this.rows.delete(id);
+    const existed = this.rows.delete(id);
+    if (existed) this.sink?.remove(this.name, id);
+    return existed;
   }
 
   get size(): number {
@@ -125,13 +150,39 @@ export interface StoredGeneric {
 
 /** Aggregate of every collection the API serves. */
 export class DataStore {
-  readonly users = new Collection<StoredUser>();
-  readonly tracks = new Collection<StoredTrack>();
-  readonly artists = new Collection<StoredArtist>();
-  readonly workflows = new Collection<StoredWorkflow>();
-  readonly contracts = new Collection<StoredGeneric>();
-  readonly experiments = new Collection<StoredGeneric>();
-  readonly prompts = new Collection<StoredGeneric>();
-  readonly tenants = new Collection<StoredGeneric>();
-  readonly apiKeys = new Collection<StoredGeneric>();
+  readonly users: Collection<StoredUser>;
+  readonly tracks: Collection<StoredTrack>;
+  readonly artists: Collection<StoredArtist>;
+  readonly workflows: Collection<StoredWorkflow>;
+  readonly contracts: Collection<StoredGeneric>;
+  readonly experiments: Collection<StoredGeneric>;
+  readonly prompts: Collection<StoredGeneric>;
+  readonly tenants: Collection<StoredGeneric>;
+  readonly apiKeys: Collection<StoredGeneric>;
+
+  /** All collections keyed by name, for hydration and iteration. */
+  readonly byName: Record<string, Collection<{ id: string }>>;
+
+  constructor(sink?: PersistenceSink) {
+    this.users = new Collection('users', sink);
+    this.tracks = new Collection('tracks', sink);
+    this.artists = new Collection('artists', sink);
+    this.workflows = new Collection('workflows', sink);
+    this.contracts = new Collection('contracts', sink);
+    this.experiments = new Collection('experiments', sink);
+    this.prompts = new Collection('prompts', sink);
+    this.tenants = new Collection('tenants', sink);
+    this.apiKeys = new Collection('apiKeys', sink);
+    this.byName = {
+      users: this.users as Collection<{ id: string }>,
+      tracks: this.tracks as Collection<{ id: string }>,
+      artists: this.artists as Collection<{ id: string }>,
+      workflows: this.workflows as Collection<{ id: string }>,
+      contracts: this.contracts,
+      experiments: this.experiments,
+      prompts: this.prompts,
+      tenants: this.tenants,
+      apiKeys: this.apiKeys,
+    };
+  }
 }

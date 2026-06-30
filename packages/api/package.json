@@ -6,6 +6,7 @@
   "scripts": { "build": "tsc", "dev": "ts-node src/main.ts", "start": "node dist/main.js" },
   "dependencies": {
     "uuid": "^9.0.0",
+    "pg": "^8.13.0",
     "@music-ai/security": "0.1.0",
     "@music-ai/observability": "0.1.0",
     "@music-ai/governance": "0.1.0",
@@ -13,5 +14,5 @@
     "@music-ai/language-registry": "0.1.0",
     "@music-ai/rights": "0.1.0"
   },
-  "devDependencies": { "typescript": "^5.4.0", "@types/node": "^20.0.0" }
+  "devDependencies": { "typescript": "^5.4.0", "@types/node": "^20.0.0", "@types/pg": "^8.11.0" }
 }

@@ -5,12 +5,14 @@ import { AuditLog } from '@music-ai/governance';
 import { Router } from './router';
 import { DataStore, type HandlerFn, type RequestContext, type AuthInfo } from './context';
 import { handlerRegistry } from './handlers';
+import type { Persistence } from './persistence';
 import type { RouteDefinition } from '../server';
 
 export interface HttpServerOptions {
   routes: RouteDefinition[];
   jwtSecret: string;
   corsOrigins: string[];
+  persistence?: Persistence | null;
 }
 
 export interface HttpServer {
@@ -18,6 +20,8 @@ export interface HttpServer {
   store: DataStore;
   metrics: MetricsRegistry;
   audit: AuditLog;
+  /** Load persisted documents into the in-memory cache (no-op without a DB). */
+  hydrate(): Promise<void>;
   listen(port: number, host: string): Promise<void>;
   close(): Promise<void>;
 }
@@ -72,7 +76,8 @@ function authFromHeader(authz: string | undefined, jwt: JwtService): AuthInfo | 
 
 export function createHttpServer(opts: HttpServerOptions): HttpServer {
   const router = new Router(opts.routes);
-  const store = new DataStore();
+  const persistence = opts.persistence ?? null;
+  const store = new DataStore(persistence ?? undefined);
   const jwt = new JwtService({ secret: opts.jwtSecret });
   const metrics = new MetricsRegistry();
   const audit = new AuditLog();
@@ -176,11 +181,20 @@ export function createHttpServer(opts: HttpServerOptions): HttpServer {
     store,
     metrics,
     audit,
+    hydrate: async () => {
+      if (!persistence) return;
+      const all = await persistence.loadAll();
+      for (const [name, rows] of Object.entries(all)) {
+        store.byName[name]?.hydrate(rows);
+      }
+    },
     listen: (port: number, host: string) =>
       new Promise<void>((resolve) => server.listen(port, host, resolve)),
-    close: () =>
-      new Promise<void>((resolve, reject) =>
+    close: async () => {
+      await new Promise<void>((resolve, reject) =>
         server.close((e) => (e ? reject(e) : resolve())),
-      ),
+      );
+      if (persistence) await persistence.close();
+    },
   };
 }

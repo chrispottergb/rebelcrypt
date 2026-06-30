@@ -22,6 +22,10 @@ services:
         generateValue: true
       - key: ENCRYPTION_KEY
         generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: rebelcrypt-db
+          property: connectionString
 
   # ---- Frontends (Next.js apps; each builds only itself via turbo) ----
   - type: web
@@ -88,3 +92,9 @@ services:
         value: production
       - key: NEXT_PUBLIC_API_URL
         value: https://rebelcrypt-api.onrender.com
+
+databases:
+  - name: rebelcrypt-db
+    plan: free
+    databaseName: music_ai
+    user: music_ai
